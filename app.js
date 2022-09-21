@@ -11,31 +11,33 @@ function getData(url) {
   return JSON.parse(ajax.response);
 }
 
+// 목록 만들기
 const newsFeed = getData(NEWS_URL);
-const ul = document.createElement("ul");
-
-window.addEventListener("hashchange", function () {
-  const id = location.hash.substring(1);
-
-  const newsContent = getData(CONTENT_URL.replace("@id", id));
-  const title = document.createElement("h1");
-
-  title.innerHTML = newsContent.title;
-
-  content.appendChild(title);
-});
-
+const newsList = [];
+newsList.push("<ul>");
 for (let i = 0; i < 10; i++) {
-  const div = document.createElement("div");
-
-  div.innerHTML = `<li>
+  newsList.push(`
+    <li>
         <a href="#${newsFeed[i].id}">
             ${newsFeed[i].title} (${newsFeed[i].comments_count})
         </a>
-    </li>`;
-
-  ul.appendChild(div.firstChild);
+    </li>
+  `);
 }
+newsList.push("</ul>");
 
-container.appendChild(ul);
-container.appendChild(content);
+// root에 추가
+container.innerHTML = newsList.join("");
+
+// 목록에서 클릭했을 때, 상세 페이지
+window.addEventListener("hashchange", function () {
+  const id = location.hash.substring(1);
+  const newsContent = getData(CONTENT_URL.replace("@id", id));
+
+  // root에 추가
+  container.innerHTML = `
+        <h1>${newsContent.title}</h1>
+
+        <div><a href="#">목록으로</a></div>
+    `;
+});
