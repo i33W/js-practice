@@ -85,7 +85,7 @@ function newsDetail() {
   const newsContent = getData(CONTENT_URL.replace("@id", id));
 
   // root에 추가
-  container.innerHTML = `
+  const template = `
     <div class="bg-gray-600 min-h-screen pb-8">
       <div class="bg-white text-xl">
         <div class="mx-auto px-4">
@@ -113,6 +113,33 @@ function newsDetail() {
       </div>
     </div>
     `;
+
+  function makeComment(comments) {
+    const commentString = [];
+
+    for (let i = 0; i < comments.length; i++) {
+      commentString.push(`
+        <div style="padding-left: ${40 * comments[i].level}px;" class="mt-4">
+          <div class="text-gray-400">
+            <i class="fa fa-sort-up mr-2"></i>
+            <strong>${comments[i].user}</strong> ${comments[i].time_ago}
+          </div>
+          <p class="text-gray-700">${comments[i].content}</p>
+        </div>
+      `);
+
+      if (comments[i].comments.length > 0) {
+        commentString.push(makeComment(comments[i].comments));
+      }
+    }
+
+    return commentString.join("");
+  }
+
+  container.innerHTML = template.replace(
+    "{{__comments__}}",
+    makeComment(newsContent.comments)
+  );
 }
 
 // 라우터
